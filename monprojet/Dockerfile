@@ -1,31 +1,30 @@
-# Utiliser l'image officielle PHP avec Apache
+# Utilise PHP avec Apache
 FROM php:8.2-apache
 
-# Installer les extensions nécessaires
+# Installe extensions PHP
 RUN apt-get update && apt-get install -y \
     zip unzip git libpng-dev libonig-dev libxml2-dev libzip-dev \
     && docker-php-ext-install pdo_mysql mbstring exif pcntl bcmath gd
 
-# Activer mod_rewrite pour Laravel
+# Active mod_rewrite pour Laravel
 RUN a2enmod rewrite
 
-# Copier composer depuis l'image officielle
+# Installe Composer
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 
-# Copier le projet dans le conteneur
+# Copie tout le code (tu es déjà dans monprojet grâce à rootDir)
 COPY . /var/www/html
 
-# Aller dans le répertoire
 WORKDIR /var/www/html
 
-# Installer les dépendances composer
+# Installe les dépendances
 RUN composer install --no-interaction --prefer-dist --optimize-autoloader
 
-# Lancer les migrations directement pendant le build
-RUN php artisan migrate --force
+# Donne les permissions
+RUN chown -R www-data:www-data storage bootstrap/cache
 
-# Donner les bons droits
-RUN chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache
-
-# Exposer le port
+# Expose Apache
 EXPOSE 80
+
+# Lance migrations et Apache
+CMD php artisan migrate --force && apache2-foreground
