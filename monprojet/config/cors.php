@@ -1,13 +1,12 @@
 <?php
 
 return [
-
     'paths' => ['api/*', 'sanctum/csrf-cookie'],
 
     'allowed_methods' => ['*'],
 
     'allowed_origins' => [
-        'https://tangerine-concha-db12b9.netlify.app',
+        'https://eloquent-dolphin-e93f54.netlify.app',
         'http://localhost:4200'
     ],
 
@@ -20,6 +19,6 @@ return [
     'max_age' => 0,
 
     'supports_credentials' => false,
-
 ];
+
 
