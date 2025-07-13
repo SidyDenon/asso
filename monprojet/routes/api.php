@@ -51,3 +51,7 @@ Route::post('/inscriptions', [InscriptionController::class, 'store']);
 Route::get('/inscriptions/{membreId}', [InscriptionController::class, 'mesInscriptions']);
 
 Route::get('/dashboard/stats', [DashboardController::class, 'stats']);
+
+Route::get('/test', function () {
+    return response()->json(['message' => 'API is working!']);
+});
