@@ -33,21 +33,20 @@ class MembreController extends Controller
     }
 
     public function show($id)
-{
-    $membre = Membre::find($id);
+    {
+        $membre = Membre::findOrFail($id);
 
-    if (!$membre) {
-        return response()->json(['message' => 'Membre introuvable'], 404);
+        // Charger la relation adhesion si elle existe sans erreur
+        $adhesion = null;
+        if (method_exists($membre, 'adhesion')) {
+            $adhesion = $membre->adhesion;
+        }
+
+        return response()->json([
+            'membre' => $membre,
+            'adhesion' => $adhesion
+        ]);
     }
-
-    $adhesion = method_exists($membre, 'adhesion') ? $membre->adhesion : null;
-
-    return response()->json([
-        'membre' => $membre,
-        'adhesion' => $adhesion
-    ]);
-}
-
 
     public function update(Request $request, $id)
     {
