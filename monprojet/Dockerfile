@@ -1,33 +1,33 @@
-# Utilise l'image officielle PHP avec Apache
+# Utiliser PHP + Apache
 FROM php:8.2-apache
 
-# Installe les extensions PHP nécessaires
+# Installer les extensions nécessaires
 RUN apt-get update && apt-get install -y \
     zip unzip git libpng-dev libonig-dev libxml2-dev libzip-dev \
     && docker-php-ext-install pdo_mysql mbstring exif pcntl bcmath gd
 
-# Active le mod_rewrite pour Laravel
+# Activer mod_rewrite
 RUN a2enmod rewrite
 
-# Installe Composer
+# Installer Composer
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 
-# Copier les fichiers du projet
+# Copier le projet
 COPY . /var/www/html
 
-# Se placer dans le dossier
+# Aller dans le dossier
 WORKDIR /var/www/html
 
-# Installer les dépendances PHP
+# Installer les dépendances
 RUN composer install --no-interaction --prefer-dist --optimize-autoloader
 
-# Définir les permissions
+# Donner les permissions
 RUN chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache
 
-# Copie .env.prod si tu veux, ou configure directement via Render
-# COPY .env.prod .env
+# Générer la clé si pas déjà faite
+RUN php artisan key:generate --force
 
-# Expose le port 80
-EXPOSE 80
-
+# Migrer la base au démarrage (Render relance souvent le conteneur)
 CMD php artisan migrate --force && apache2-foreground
+
+EXPOSE 80

@@ -2,8 +2,8 @@ services:
   - type: web
     name: asso-app
     env: docker
-    plan: free
     rootDir: monprojet
+    plan: free
     envVars:
       - key: APP_ENV
         value: production
