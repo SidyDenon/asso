@@ -6,7 +6,7 @@ return [
     'allowed_methods' => ['*'],
 
     'allowed_origins' => [
-        'https://eloquent-dolphin-e93f54.netlify.app',
+        'https://quiet-marzipan-7330dc.netlify.app',
         'http://localhost:4200'
     ],
 
