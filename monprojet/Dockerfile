@@ -1,26 +1,31 @@
-# Utiliser l'image officielle PHP avec Apache
+# Utilise l'image officielle PHP avec Apache
 FROM php:8.2-apache
 
-# Installer les extensions PHP nécessaires
-RUN docker-php-ext-install pdo pdo_mysql
+# Installe les extensions PHP nécessaires
+RUN apt-get update && apt-get install -y \
+    zip unzip git libpng-dev libonig-dev libxml2-dev libzip-dev \
+    && docker-php-ext-install pdo_mysql mbstring exif pcntl bcmath gd
 
-# Copier le code dans le container
-COPY . /var/www/html
+# Active le mod_rewrite pour Laravel
+RUN a2enmod rewrite
 
-# Changer le répertoire de travail
-WORKDIR /var/www/html
-
-# Installer Composer
+# Installe Composer
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 
-# Installer les dépendances
-RUN composer install --no-dev --optimize-autoloader
+# Copier les fichiers du projet
+COPY . /var/www/html
 
-# Générer la clé
-RUN php artisan key:generate
+# Se placer dans le dossier
+WORKDIR /var/www/html
 
-# Ouvrir le port
+# Installer les dépendances PHP
+RUN composer install --no-interaction --prefer-dist --optimize-autoloader
+
+# Définir les permissions
+RUN chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache
+
+# Copie .env.prod si tu veux, ou configure directement via Render
+# COPY .env.prod .env
+
+# Expose le port 80
 EXPOSE 80
-
-# Lancer Apache en premier plan
-CMD ["apache2-foreground"]
